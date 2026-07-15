@@ -2,19 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Content OS — chat prompt demo</title>
+<title>Claude chat prompt demo</title>
 <style>
-  @font-face {
-    font-family: "Inter";
-    src: local("Inter"), local("Helvetica Neue"), local("Arial");
-  }
   :root {
-    --vl-bg-soft: #fafafa;
-    --vl-border: rgba(0, 0, 0, 0.08);
-    --vl-text: #334155;
-    --vl-text-muted: #64748b;
-    --vl-text-heading: #0f172a;
-    --vl-accent: #f97316;
+    --bg: #eeece3;
+    --composer-bg: #ffffff;
+    --border: rgba(0, 0, 0, 0.09);
+    --text: #3d3d3a;
+    --text-muted: #83827d;
+    --text-heading: #30302c;
+    --accent: #d97757;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -22,9 +19,9 @@
     padding: 0;
     width: 1280px;
     height: 800px;
-    background: var(--vl-bg-soft);
-    font-family: Inter, -apple-system, "Segoe UI", sans-serif;
-    color: var(--vl-text);
+    background: var(--bg);
+    font-family: -apple-system, "Segoe UI", Inter, sans-serif;
+    color: var(--text);
     -webkit-font-smoothing: antialiased;
     overflow: hidden;
   }
@@ -36,108 +33,116 @@
     align-items: center;
     justify-content: center;
   }
-  .eyebrow {
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--vl-accent);
-    margin-bottom: 14px;
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    color: var(--accent);
+  }
+  .logo svg { width: 26px; height: 26px; }
+  .logo span {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-heading);
   }
   h1 {
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--vl-text-heading);
-    margin: 0 0 12px;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text-heading);
+    margin: 0 0 26px;
   }
   .composer {
     width: 760px;
-    background: #fff;
-    border: 1px solid var(--vl-border);
-    border-radius: 16px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-    padding: 16px 56px 16px 20px;
+    background: var(--composer-bg);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 18px 20px 14px;
     position: relative;
-    min-height: 52px;
-    display: flex;
-    align-items: center;
   }
   .composer-text {
-    font-size: 14px;
+    font-size: 15px;
     line-height: 1.5;
-    color: var(--vl-text);
+    color: var(--text);
     white-space: pre-wrap;
     word-break: break-word;
+    min-height: 24px;
   }
   .caret {
     display: inline-block;
     width: 2px;
-    height: 16px;
-    background: var(--vl-text-heading);
+    height: 17px;
+    background: var(--text-heading);
     margin-left: 1px;
     vertical-align: -3px;
     animation: blink 0.9s step-end infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
+  .composer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+  }
+  .tool-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
   .send-btn {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 999px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--vl-bg-card, rgba(0,0,0,0.04));
-    color: var(--vl-text-muted);
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-muted);
     transition: background 0.15s ease, color 0.15s ease;
   }
   .send-btn.active {
-    background: var(--vl-accent);
+    background: var(--accent);
     color: #fff;
   }
-  .suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-    max-width: 760px;
+  .hint {
     margin-top: 22px;
-  }
-  .pill {
-    padding: 9px 16px;
-    border-radius: 999px;
-    border: 1px solid var(--vl-border);
-    background: #fff;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--vl-text-heading);
+    font-size: 12.5px;
+    color: var(--text-muted);
   }
 </style>
 </head>
 <body>
   <div class="frame">
-    <div class="eyebrow">Content OS</div>
-    <h1>What do you want to write?</h1>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 3 21h4.2l1.7-4.2h6.2L16.8 21H21L12 2zm-1.7 11.3L12 8l1.7 5.3H10.3z"/></svg>
+      <span>Claude</span>
+    </div>
+    <h1>How can I help you today?</h1>
     <div class="composer">
       <div class="composer-text" id="text"></div><span class="caret"></span>
-      <div class="send-btn" id="send">
-        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 1.5a.5.5 0 01.5.5v10.793l3.146-3.147a.5.5 0 01.708.708l-4 4a.5.5 0 01-.708 0l-4-4a.5.5 0 01.708-.708L7.5 12.793V2a.5.5 0 01.5-.5z" transform="rotate(180 8 8)"/>
-        </svg>
+      <div class="composer-row">
+        <div class="tool-pill">＋ Search &amp; tools</div>
+        <div class="send-btn" id="send">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1.5a.5.5 0 01.5.5v10.793l3.146-3.147a.5.5 0 01.708.708l-4 4a.5.5 0 01-.708 0l-4-4a.5.5 0 01.708-.708L7.5 12.793V2a.5.5 0 01.5-.5z" transform="rotate(180 8 8)"/>
+          </svg>
+        </div>
       </div>
     </div>
-    <div class="suggestions">
-      <div class="pill">💡 Suggest ideas</div>
-      <div class="pill">✍️ Write in creator style</div>
-      <div class="pill">📊 Score my post</div>
-      <div class="pill">🔄 Iterate post</div>
-    </div>
+    <div class="hint">Claude can make mistakes. Please double-check responses.</div>
   </div>
 
 <script>
-  const FULL_TEXT = "Suggest 5 content ideas for this week";
+  const FULL_TEXT = "Find SaaS companies in the Middle East";
   const el = document.getElementById("text");
   const sendBtn = document.getElementById("send");
   // total typing duration budget so the whole clip lands at ~3s
