@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Claude chat prompt demo</title>
+<style>
+  :root {
+    --bg: #eeece3;
+    --composer-bg: #ffffff;
+    --border: rgba(0, 0, 0, 0.09);
+    --text: #3d3d3a;
+    --text-muted: #83827d;
+    --text-heading: #30302c;
+    --accent: #d97757;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1280px;
+    height: 800px;
+    background: var(--bg);
+    font-family: -apple-system, "Segoe UI", Inter, sans-serif;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .frame {
+    width: 1280px;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+    color: var(--accent);
+  }
+  .logo svg { width: 26px; height: 26px; }
+  .logo span {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-heading);
+  }
+  h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text-heading);
+    margin: 0 0 26px;
+  }
+  .composer {
+    width: 760px;
+    background: var(--composer-bg);
+    border: 1px solid var(--border);
+    border-radius: 26px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 18px 20px 14px;
+    position: relative;
+  }
+  .composer-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 24px;
+  }
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 17px;
+    background: var(--text-heading);
+    margin-left: 1px;
+    vertical-align: -3px;
+    animation: blink 0.9s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .composer-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+  }
+  .tool-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .send-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--text-muted);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .send-btn.active {
+    background: var(--accent);
+    color: #fff;
+  }
+  .hint {
+    margin-top: 22px;
+    font-size: 12.5px;
+    color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 3 21h4.2l1.7-4.2h6.2L16.8 21H21L12 2zm-1.7 11.3L12 8l1.7 5.3H10.3z"/></svg>
+      <span>Claude</span>
+    </div>
+    <h1>How can I help you today?</h1>
+    <div class="composer">
+      <div class="composer-text" id="text"></div><span class="caret"></span>
+      <div class="composer-row">
+        <div class="tool-pill">＋ Search &amp; tools</div>
+        <div class="send-btn" id="send">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1.5a.5.5 0 01.5.5v10.793l3.146-3.147a.5.5 0 01.708.708l-4 4a.5.5 0 01-.708 0l-4-4a.5.5 0 01.708-.708L7.5 12.793V2a.5.5 0 01.5-.5z" transform="rotate(180 8 8)"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div class="hint">Claude can make mistakes. Please double-check responses.</div>
+  </div>
+
+<script>
+  const FULL_TEXT = "Find SaaS companies in the Middle East";
+  const el = document.getElementById("text");
+  const sendBtn = document.getElementById("send");
+  // total typing duration budget so the whole clip lands at ~3s
+  const DURATION_MS = 2400;
+  const stepMs = DURATION_MS / FULL_TEXT.length;
+  let i = 0;
+
+  window.__done = false;
+
+  function tick() {
+    if (i <= FULL_TEXT.length) {
+      el.textContent = FULL_TEXT.slice(0, i);
+      if (i > 0) sendBtn.classList.add("active");
+      i++;
+      setTimeout(tick, stepMs);
+    } else {
+      window.__done = true;
+    }
+  }
+  tick();
+</script>
+</body>
+</html>
