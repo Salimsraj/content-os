@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Content OS — chat prompt demo</title>
+<style>
+  @font-face {
+    font-family: "Inter";
+    src: local("Inter"), local("Helvetica Neue"), local("Arial");
+  }
+  :root {
+    --vl-bg-soft: #fafafa;
+    --vl-border: rgba(0, 0, 0, 0.08);
+    --vl-text: #334155;
+    --vl-text-muted: #64748b;
+    --vl-text-heading: #0f172a;
+    --vl-accent: #f97316;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 1280px;
+    height: 800px;
+    background: var(--vl-bg-soft);
+    font-family: Inter, -apple-system, "Segoe UI", sans-serif;
+    color: var(--vl-text);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+  .frame {
+    width: 1280px;
+    height: 800px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--vl-accent);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--vl-text-heading);
+    margin: 0 0 12px;
+  }
+  .composer {
+    width: 760px;
+    background: #fff;
+    border: 1px solid var(--vl-border);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    padding: 16px 56px 16px 20px;
+    position: relative;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+  }
+  .composer-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--vl-text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 16px;
+    background: var(--vl-text-heading);
+    margin-left: 1px;
+    vertical-align: -3px;
+    animation: blink 0.9s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .send-btn {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--vl-bg-card, rgba(0,0,0,0.04));
+    color: var(--vl-text-muted);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .send-btn.active {
+    background: var(--vl-accent);
+    color: #fff;
+  }
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 760px;
+    margin-top: 22px;
+  }
+  .pill {
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 1px solid var(--vl-border);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--vl-text-heading);
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div class="eyebrow">Content OS</div>
+    <h1>What do you want to write?</h1>
+    <div class="composer">
+      <div class="composer-text" id="text"></div><span class="caret"></span>
+      <div class="send-btn" id="send">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 1.5a.5.5 0 01.5.5v10.793l3.146-3.147a.5.5 0 01.708.708l-4 4a.5.5 0 01-.708 0l-4-4a.5.5 0 01.708-.708L7.5 12.793V2a.5.5 0 01.5-.5z" transform="rotate(180 8 8)"/>
+        </svg>
+      </div>
+    </div>
+    <div class="suggestions">
+      <div class="pill">💡 Suggest ideas</div>
+      <div class="pill">✍️ Write in creator style</div>
+      <div class="pill">📊 Score my post</div>
+      <div class="pill">🔄 Iterate post</div>
+    </div>
+  </div>
+
+<script>
+  const FULL_TEXT = "Suggest 5 content ideas for this week";
+  const el = document.getElementById("text");
+  const sendBtn = document.getElementById("send");
+  // total typing duration budget so the whole clip lands at ~3s
+  const DURATION_MS = 2400;
+  const stepMs = DURATION_MS / FULL_TEXT.length;
+  let i = 0;
+
+  window.__done = false;
+
+  function tick() {
+    if (i <= FULL_TEXT.length) {
+      el.textContent = FULL_TEXT.slice(0, i);
+      if (i > 0) sendBtn.classList.add("active");
+      i++;
+      setTimeout(tick, stepMs);
+    } else {
+      window.__done = true;
+    }
+  }
+  tick();
+</script>
+</body>
+</html>
